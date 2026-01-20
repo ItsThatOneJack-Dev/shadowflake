@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shadowflake"
-version = "0.2.3"
+version = "0.3.1"
 description = "A Python implementation of the Shadowflake UXID format!"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -21,8 +21,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-interactive = ["rich>=13.0.0"]
-dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0"]
+fancy = ["rich>=13.0.0"]
 
 [project.scripts]
 shadowflake = "shadowflake.__main__:main"
@@ -31,3 +30,6 @@ shadowflake = "shadowflake.__main__:main"
 Homepage = "https://github.com/itsthatonejack-dev/shadowflake"
 Repository = "https://github.com/itsthatonejack-dev/shadowflake"
 Issues = "https://github.com/itsthatonejack-dev/shadowflake/issues"
+
+[tool.setuptools]
+packages = ["shadowflake"]
