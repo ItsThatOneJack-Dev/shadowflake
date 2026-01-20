@@ -94,8 +94,7 @@ def generate_from_args(args, use_rich, console=None):
         if args.fail_silently:
             sys.exit(1)
         
-        if args.no_dumb:
-            error_msg = f"Metadata must be all-or-nothing! Missing fields: {', '.join(missing)}"
+        if args.no_prompt:
             if use_rich:
                 assert console is not None
                 console.print("[red][bold]✗[/bold] Metadata must be all-or-nothing![/red]")
@@ -491,7 +490,7 @@ Examples:
         help="Use simple prompts without rich (for interactive mode or missing fields)"
     )
     parser.add_argument(
-        "--no-dumb",
+        "--no-prompt",
         action="store_true",
         help="Fail with error if metadata is incomplete (don't prompt)"
     )
