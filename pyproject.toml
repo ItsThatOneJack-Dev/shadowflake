@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shadowflake"
-version = "0.3.1"
+version = "0.3.4"
 description = "A Python implementation of the Shadowflake UXID format!"
 readme = "README.md"
 requires-python = ">=3.10"

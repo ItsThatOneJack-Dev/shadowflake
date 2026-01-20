@@ -6,15 +6,6 @@ import sys
 
 from .shadowflake import Shadowflake, ShadowflakeError
 
-
-def output_machine(data, format_type):
-    import json
-    
-    if format_type == "json":
-        print(json.dumps(data, separators=(',', ':')))
-    elif format_type == "dict":
-        print(repr(data))
-
 def dumb_input(prompt, default=None):
     if default is not None:
         result = input(f"{prompt} [{default}]: ").strip()
@@ -82,9 +73,7 @@ def generate_from_args(args, use_rich, console=None):
             now = datetime.datetime.now(datetime.timezone.utc)
             anchor = datetime.datetime.combine(now.date(), anchor_time, tzinfo=datetime.timezone.utc)
         except ValueError:
-            if args.machine:
-                output_machine({"success": False, "error": "Invalid anchor time format. Use HH:MM:SS"}, args.machine)
-            elif use_rich:
+            if use_rich:
                 assert console is not None
                 console.print("[red][bold]✗[/bold] Invalid anchor time format. Use HH:MM:SS[/red]")
             else:
@@ -103,15 +92,11 @@ def generate_from_args(args, use_rich, console=None):
     
     if present and missing:
         if args.fail_silently:
-            if args.machine:
-                output_machine({"success": False, "error": "Metadata incomplete"}, args.machine)
             sys.exit(1)
         
         if args.no_dumb:
             error_msg = f"Metadata must be all-or-nothing! Missing fields: {', '.join(missing)}"
-            if args.machine:
-                output_machine({"success": False, "error": error_msg}, args.machine)
-            elif use_rich:
+            if use_rich:
                 assert console is not None
                 console.print("[red][bold]✗[/bold] Metadata must be all-or-nothing![/red]")
                 console.print(f"[yellow]Missing fields: {', '.join(missing)}[/yellow]")
@@ -120,20 +105,12 @@ def generate_from_args(args, use_rich, console=None):
                 print(f"Missing fields: {', '.join(missing)}")
             sys.exit(1)
         
-        if args.machine:
-            error_msg = f"Metadata incomplete. Missing: {', '.join(missing)}"
-            output_machine({"success": False, "error": error_msg}, args.machine)
-            sys.exit(1)
-        
         system, node, id_val = prompt_missing_fields(fields, use_rich and not args.dumb, console)
     
     if system is not None:
-        system = system.upper()
-        if system and not re.fullmatch(r"[A-Z0-9\-_]+", system):
+        if system and not re.fullmatch(r"[A-Za-z0-9\-_]+", system):
             error_msg = f"Invalid SYSTEM value: {system!r}"
-            if args.machine:
-                output_machine({"success": False, "error": error_msg}, args.machine)
-            elif use_rich:
+            if use_rich:
                 assert console is not None
                 console.print(f"[red][bold]✗[/bold] Invalid SYSTEM value: {system!r}[/red]")
             else:
@@ -143,12 +120,9 @@ def generate_from_args(args, use_rich, console=None):
             system = None
     
     if node is not None:
-        node = node.upper()
-        if node and not re.fullmatch(r"[A-Z0-9\-_]+", node):
+        if node and not re.fullmatch(r"[A-Za-z0-9\-_]+", node):
             error_msg = f"Invalid NODE value: {node!r}"
-            if args.machine:
-                output_machine({"success": False, "error": error_msg}, args.machine)
-            elif use_rich:
+            if use_rich:
                 assert console is not None
                 console.print(f"[red][bold]✗[/bold] Invalid NODE value: {node!r}[/red]")
             else:
@@ -159,9 +133,7 @@ def generate_from_args(args, use_rich, console=None):
     
     if id_val is not None and id_val < 0:
         error_msg = "ID must be non-negative!"
-        if args.machine:
-            output_machine({"success": False, "error": error_msg}, args.machine)
-        elif use_rich:
+        if use_rich:
             assert console is not None
             console.print("[red][bold]✗[/bold] ID must be non-negative![/red]")
         else:
@@ -176,9 +148,7 @@ def generate_from_args(args, use_rich, console=None):
             id=id_val,
         )
         
-        if args.machine:
-            output_machine({"success": True, "uxid": shadowflake}, args.machine)
-        elif use_rich:
+        if use_rich:
             assert console is not None
             from rich.panel import Panel
             console.print(Panel(
@@ -191,9 +161,7 @@ def generate_from_args(args, use_rich, console=None):
         
         return shadowflake
     except ShadowflakeError as e:
-        if args.machine:
-            output_machine({"success": False, "error": str(e)}, args.machine)
-        elif use_rich:
+        if use_rich:
             assert console is not None
             console.print(f"[red][bold]✗[/bold] Error generating Shadowflake: {e}[/red]")
         else:
@@ -202,7 +170,7 @@ def generate_from_args(args, use_rich, console=None):
 
 def decode_from_args(args, use_rich, console=None):
     try:
-        decoded = Shadowflake.decode(args.decode)
+        decoded = Shadowflake.decode(args.uxid)
         
         if use_rich:
             assert console is not None
@@ -303,14 +271,12 @@ def interactive_mode(use_rich):
                         id = None
 
                     if system is not None:
-                        system = system.upper()
-                        if not re.fullmatch(r"[A-Z0-9\-_]+", system):
+                        if not re.fullmatch(r"[A-Za-z0-9\-_]+", system):
                             console.print(f"[red][bold]✗[/bold] Invalid SYSTEM value: {system!r}![/red]")
                             continue
 
                     if node is not None:
-                        node = node.upper()
-                        if not re.fullmatch(r"[A-Z0-9\-_]+", node):
+                        if not re.fullmatch(r"[A-Za-z0-9\-_]+", node):
                             console.print(f"[red][bold]✗[/bold] Invalid NODE value: {node!r}![/red]")
                             continue
 
@@ -439,14 +405,12 @@ def interactive_mode(use_rich):
                         id = None
 
                     if system is not None:
-                        system = system.upper()
-                        if not re.fullmatch(r"[A-Z0-9\-_]+", system):
+                        if not re.fullmatch(r"[A-Za-z0-9\-_]+", system):
                             print(f"✗ Invalid SYSTEM value: {system!r}!")
                             continue
 
                     if node is not None:
-                        node = node.upper()
-                        if not re.fullmatch(r"[A-Z0-9\-_]+", node):
+                        if not re.fullmatch(r"[A-Za-z0-9\-_]+", node):
                             print(f"✗ Invalid NODE value: {node!r}!")
                             continue
 
@@ -509,7 +473,7 @@ def interactive_mode(use_rich):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Shadowflake - Universal Extended Identity (UXID) generator and decoder",
+        description="Shadowflake - A high-volume-safe, order-preserving identifier.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -518,7 +482,6 @@ Examples:
   shadowflake generate                           # Generate a Shadowflake
   shadowflake generate --system=AUTH --node=API --id=123
   shadowflake decode <UXID>                      # Decode a Shadowflake
-  shadowflake generate --machine=json            # Machine-readable output
         """
     )
     
@@ -536,12 +499,6 @@ Examples:
         "--fail-silently",
         action="store_true",
         help="Exit silently with error code if metadata is incomplete"
-    )
-    parser.add_argument(
-        "--machine",
-        type=str,
-        choices=["json", "dict"],
-        help="Output in machine-readable format (json or dict)"
     )
     
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
@@ -598,13 +555,10 @@ Examples:
                 sys.exit(1)
             use_rich = False
     elif use_rich and args.command in ["generate", "decode"]:
-        if not args.machine:
-            try:
-                from rich.console import Console
-                console = Console()
-            except ImportError:
-                use_rich = False
-        else:
+        try:
+            from rich.console import Console
+            console = Console()
+        except ImportError:
             use_rich = False
     
     if args.command == "decode":
