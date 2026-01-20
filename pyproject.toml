@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shadowflake"
+version = "0.2.3"
+description = "A Python implementation of the Shadowflake UXID format!"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "AGPL-3.0-or-later"
+authors = [{ name = "ItsThatOneJack", email = "jack@ito.dev" }]
+keywords = ["uuid", "uxid", "identifier", "shadowflake"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.optional-dependencies]
+interactive = ["rich>=13.0.0"]
+dev = ["pytest>=7.0.0", "pytest-cov>=4.0.0"]
+
+[project.scripts]
+shadowflake = "shadowflake.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/itsthatonejack-dev/shadowflake"
+Repository = "https://github.com/itsthatonejack-dev/shadowflake"
+Issues = "https://github.com/itsthatonejack-dev/shadowflake/issues"
